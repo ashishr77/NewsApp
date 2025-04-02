@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav_container flex">
+            <div class="logo">
+                <h3>NEWS App</h3>
+            </div>
+            <div class="nav_item">
+                <ul class="flex">
+                    <li class="nav-item " id="Trending"  onclick="myquery('Trending')">Trending</li>
+                    <li class="nav-item " id="technology" onclick="myquery('technology')" >Technology</li>
+                    <li class="nav-item " id="science" onclick="myquery('science')">Science</li>
+                    <li class="nav-item " id="entertainment" onclick="myquery('entertainment')">Entertainment</li>
+                </ul>
+            </div>
+            <div class="divbtn">
+                <input type="text" name="search" id="search-input" placeholder="e.g. Politics">
+                <button type="submit" class="btn" id="search-btn">Search</button>
+            </div>
+        </div>
+    </nav>
+    <main>
+        <div id="card_container">
+           
+        </div>
+    </main>
+    <template id="template-card">
+        <div class="card">
+            <img src="https://via.placeholder.com/400x200" alt="Placeholder Image" id="news-img">
+            <div class="card-content">
+                <h3 id="news-title">Card Heading</h3>
+                <h5 class="news-source" id="news-source">Author Name - July 27, 2024</h5>
+                <p class="news-desc" id="news-desc">This is a brief description of the card content. It provides an overview of the information or topic covered in the card.</p>
+            </div>
+        </div>
+    </template>
+    <script src="script.js"></script>
+</body>
+</html>
