@@ -1,4 +1,5 @@
 **📰 News App - Real-Time News Aggregator**
+
 A responsive News App built with HTML, CSS, and JavaScript that fetches the latest news articles from the NewsAPI. Users can browse trending news, filter by category (Technology, Science, Entertainment), or search for specific topics.
 
 **🚀 Features**
