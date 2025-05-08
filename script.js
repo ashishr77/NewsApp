@@ -1,5 +1,6 @@
-const API_KEY = process.env.NEWS_APP_NEWS_API_KEY;
-const url = process.env.NEWS_APP_NEWS_API_URL;
+const API_KEY = 96f81d399a5a48e382020853948f62fb;
+const url = https://newsapi.org/v2/everything?q=;
+;
 
 window.addEventListener("load", () => fetchNews("trending"));
 
