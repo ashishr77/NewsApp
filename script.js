@@ -8,7 +8,7 @@ window.addEventListener("load", () => {
     // Check if it's the user's first visit using localStorage
     const isFirstVisit = !localStorage.getItem("hasVisited");
     if (isFirstVisit) {
-        fetchNews("trending&country=in");
+        fetchNews("trendinginindia&country=in");
         localStorage.setItem("hasVisited", "true");
     } else {
         fetchNews("trending");
