@@ -5,17 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News App</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        @media (max-width: 768px) {
+            .nav_item {
+                display: none;
+            }
+            .nav_container {
+                justify-content: space-between;
+                align-items: center;
+            }
+            .logo, .divbtn {
+                flex: 1;
+            }
+            .logo {
+                text-align: left;
+            }
+            .divbtn {
+                text-align: right;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav>
         <div class="nav_container flex">
             <div class="logo">
-                <h3>NEWS App</h3>
+                <h3>NEWS365 Instant</h3>
             </div>
             <div class="nav_item">
                 <ul class="flex">
-                    <li class="nav-item " id="Trending"  onclick="myquery('Trending')">Trending</li>
-                    <li class="nav-item " id="technology" onclick="myquery('technology')" >Technology</li>
+                    <li class="nav-item " id="Trending" onclick="myquery('Trending')">Trending</li>
+                    <li class="nav-item " id="technology" onclick="myquery('technology')">Technology</li>
                     <li class="nav-item " id="science" onclick="myquery('science')">Science</li>
                     <li class="nav-item " id="entertainment" onclick="myquery('entertainment')">Entertainment</li>
                 </ul>
@@ -28,12 +48,11 @@
     </nav>
     <main>
         <div id="card_container">
-           
         </div>
     </main>
     <template id="template-card">
         <div class="card">
-            <img src="https://via.placeholder.com/400x200" alt="Placeholder Image" id="news-img">
+            <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=400&h=200&fit=crop" alt="Placeholder Image" id="news-img" loading="lazy">
             <div class="card-content">
                 <h3 id="news-title">Card Heading</h3>
                 <h5 class="news-source" id="news-source">Author Name - July 27, 2024</h5>
