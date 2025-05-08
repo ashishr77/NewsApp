@@ -1,99 +1,43 @@
-const API_KEY = "96f81d399a5a48e382020853948f62fb";
+const API_KEY = "pub_85783cfc89c43a5e47d59648131ad965ee251";
+const url = "https://newsdata.io/api/1/news?apikey=";
 
-// Modified URLs to use the appropriate endpoints
-const EVERYTHING_URL = "https://newsapi.org/v2/everything";
-const TOP_HEADLINES_URL = "https://newsapi.org/v2/top-headlines";
-
-window.addEventListener("load", () => fetchNews("trending"));
+window.addEventListener("load", () => fetchNews("Trending"));
 
 async function fetchNews(query) {
-    try {
-        let apiUrl;
-        const params = new URLSearchParams();
-        
-        // Add API key to all requests
-        params.append("apiKey", API_KEY);
-        
-        // Handle special categories vs general search
-        if (query === "trending") {
-            // For trending, use top headlines with no specific query
-            apiUrl = TOP_HEADLINES_URL;
-            params.append("language", "en");
-            params.append("pageSize", "20");
-        } else if (["technology", "science", "entertainment"].includes(query)) {
-            // For categories, use top headlines with category parameter
-            apiUrl = TOP_HEADLINES_URL;
-            params.append("category", query);
-            params.append("language", "en");
-            params.append("pageSize", "20");
-        } else {
-            // For everything else, use the everything endpoint with query
-            apiUrl = EVERYTHING_URL;
-            params.append("q", query);
-            params.append("language", "en");
-            params.append("sortBy", "publishedAt");
-            params.append("pageSize", "20");
-        }
-        
-        const res = await fetch(`${apiUrl}?${params.toString()}`);
-        
-        if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(`API Error: ${errorData.message || 'Unknown error'}`);
-        }
-        
-        const data = await res.json();
-        
-        if (data.status === "error") {
-            throw new Error(data.message || "Unknown API error");
-        }
-        
-        bindData(data.articles);
-    } catch (error) {
-        console.error("Fetch error:", error);
-        showErrorMessage(`Failed to load news: ${error.message}`);
+    if (!query || typeof query !== "string" || query.trim() === "") {
+        console.error("Invalid or empty query");
+        document.getElementById("card_container").innerHTML = `<p style="color: #555; text-align: center;">Please enter a valid search term.</p>`;
+        return;
     }
-}
 
-function showErrorMessage(message) {
-    const container = document.getElementById("card_container");
-    container.innerHTML = `
-        <div style="
-            background-color: #f8d7da; 
-            color: #721c24; 
-            padding: 20px; 
-            border-radius: 8px; 
-            text-align: center; 
-            margin: 20px auto; 
-            max-width: 80%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            ${message}
-        </div>`;
+    try {
+        const res = await fetch(`${url}${API_KEY}&q=${encodeURIComponent(query.trim())}&language=en`);
+        if (!res.ok) {
+            throw new Error(`Network response was not ok: ${res.status} ${res.statusText}`);
+        }
+        const data = await res.json();
+        if (data.status === "error") {
+            throw new Error(`API Error: ${data.results.message || "Unknown error"}`);
+        }
+        bindData(data.results || []);
+    } catch (error) {
+        console.error("Fetch error:", error.message);
+        document.getElementById("card_container").innerHTML = `<p style="color: red; text-align: center;">Failed to load news: ${error.message}</p>`;
+    }
 }
 
 function bindData(articles) {
     const cardsContainer = document.getElementById("card_container");
     const cardTemplate = document.getElementById("template-card");
     cardsContainer.innerHTML = "";
-    
+
     if (!articles || articles.length === 0) {
-        cardsContainer.innerHTML = `
-            <div style="
-                background-color: #e2e3e5; 
-                color: #383d41; 
-                padding: 20px; 
-                border-radius: 8px; 
-                text-align: center; 
-                margin: 20px auto; 
-                max-width: 80%;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                No articles found. Try a different search.
-            </div>`;
+        cardsContainer.innerHTML = `<p style="color: #555; text-align: center;">No news articles found for this query.</p>`;
         return;
     }
-    
+
     articles.forEach((article) => {
-        if (!article.urlToImage) return;
+        if (!article.image_url || !article.title) return; // Skip articles without image or title
         const cardClone = document.importNode(cardTemplate.content, true);
         fillDataInCard(cardClone, article);
         cardsContainer.appendChild(cardClone);
@@ -105,31 +49,23 @@ function fillDataInCard(cardClone, article) {
     const newsTitle = cardClone.querySelector("#news-title");
     const newsSource = cardClone.querySelector("#news-source");
     const newsDesc = cardClone.querySelector("#news-desc");
-    
-    newsImg.src = article.urlToImage || "https://via.placeholder.com/400x200";
-    newsTitle.innerHTML = article.title ? truncateText(article.title, 60) : "No title available";
-    newsDesc.innerHTML = article.description ? truncateText(article.description, 150) : "No description available";
-    
-    const date = new Date(article.publishedAt).toLocaleString("en-US", { 
-        timeZone: "Asia/Jakarta",
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-    
-    newsSource.innerHTML = `${article.source?.name || "Unknown Source"} · ${date}`;
-    
-    cardClone.firstElementChild.addEventListener("click", () => {
-        window.open(article.url, "_blank");
-    });
-}
 
-function truncateText(text, maxLength) {
-    return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+    newsImg.src = article.image_url || "https://via.placeholder.com/400x200?text=No+Image";
+    newsImg.alt = article.title || "News Image";
+    newsTitle.innerHTML = article.title ? `${article.title.slice(0, 60)}...` : "No title available";
+    newsDesc.innerHTML = article.description ? `${article.description.slice(0, 150)}...` : "No description available";
+
+    const date = article.pubDate ? new Date(article.pubDate).toLocaleString("en-US", { timeZone: "Asia/Jakarta" }) : "Unknown date";
+    newsSource.innerHTML = `${article.source_id || "Unknown Source"} · ${date}`;
+
+    cardClone.firstElementChild.addEventListener("click", () => {
+        window.open(article.link, "_blank");
+    });
 }
 
 let selectedNav = null;
 function myquery(query) {
+    if (!query) return;
     fetchNews(query);
     const navItem = document.getElementById(query);
     if (selectedNav) {
@@ -154,10 +90,10 @@ searchBtn.addEventListener("click", () => {
         }
     } else {
         console.log("Search input is empty");
+        document.getElementById("card_container").innerHTML = `<p style="color: #555; text-align: center;">Please enter a search term.</p>`;
     }
 });
 
-// Add event listener for Enter key on search input
 searchText.addEventListener("keypress", (event) => {
     if (event.key === "Enter") {
         searchBtn.click();
