@@ -1,6 +1,5 @@
 const API_KEY = "96f81d399a5a48e382020853948f62fb";
 const url = "https://newsapi.org/v2/everything?q=";
-;
 
 window.addEventListener("load", () => fetchNews("trending"));
 
@@ -18,11 +17,9 @@ async function fetchNews(query) {
 function bindData(articles) {
     const cardsContainer = document.getElementById("card_container");
     const cardTemplate = document.getElementById("template-card");
-
     cardsContainer.innerHTML = "";
     articles.forEach((article) => {
         if (!article.urlToImage) return;
-
         const cardClone = document.importNode(cardTemplate.content, true);
         fillDataInCard(cardClone, article);
         cardsContainer.appendChild(cardClone);
@@ -32,15 +29,15 @@ function bindData(articles) {
 function fillDataInCard(cardClone, article) {
     const newsImg = cardClone.querySelector("#news-img");
     const newsTitle = cardClone.querySelector("#news-title");
-    const newsSource = cardClone.querySelector(".news-source");
-    const newsDesc = cardClone.querySelector(".news-desc");
-
+    const newsSource = cardClone.querySelector("#news-source");
+    const newsDesc = cardClone.querySelector("#news-desc");
+    
     newsImg.src = article.urlToImage || "https://via.placeholder.com/400x200";
     newsTitle.innerHTML = article.title ? `${article.title.slice(0, 60)}...` : "No title available";
     newsDesc.innerHTML = article.description ? `${article.description.slice(0, 150)}...` : "No description available";
-
+    
     const date = new Date(article.publishedAt).toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
-    newsSource.innerHTML = `${article.source?.name || "Unknown Source"} . ${date}`;
+    newsSource.innerHTML = `${article.source?.name || "Unknown Source"} · ${date}`;
     
     cardClone.firstElementChild.addEventListener("click", () => {
         window.open(article.url, "_blank");
@@ -48,7 +45,6 @@ function fillDataInCard(cardClone, article) {
 }
 
 let selectedNav = null;
-
 function myquery(query) {
     fetchNews(query);
     const navItem = document.getElementById(query);
@@ -56,7 +52,6 @@ function myquery(query) {
         selectedNav.classList.remove("active");
     }
     selectedNav = navItem;
-
     if (selectedNav) {
         selectedNav.classList.add("active");
     }
@@ -75,5 +70,12 @@ searchBtn.addEventListener("click", () => {
         }
     } else {
         console.log("Search input is empty");
+    }
+});
+
+// Add event listener for Enter key on search input
+searchText.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+        searchBtn.click();
     }
 });
