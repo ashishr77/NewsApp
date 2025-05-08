@@ -1,8 +1,19 @@
-const API_KEY = "pub_85783cfc89c43a5e47d59648131ad965ee251";
-const url = "https://newsdata.io/api/1/news?apikey=";
+
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
-window.addEventListener("load", () => fetchNews("Trending"));
+const API_KEY = "pub_85783cfc89c43a5e47d59648131ad965ee251";
+const url = "https://newsdata.io/api/1/news?apikey=";
+
+window.addEventListener("load", () => {
+    // Check if it's the user's first visit using localStorage
+    const isFirstVisit = !localStorage.getItem("hasVisited");
+    if (isFirstVisit) {
+        fetchNews("trending&country=in");
+        localStorage.setItem("hasVisited", "true");
+    } else {
+        fetchNews("trending");
+    }
+});
 
 async function fetchNews(query) {
     if (!query || typeof query !== "string" || query.trim() === "") {
@@ -23,7 +34,7 @@ async function fetchNews(query) {
         bindData(data.results || []);
     } catch (error) {
         console.error("Fetch error:", error.message);
-        document.getElementById("card_container").innerHTML = `<p style="color: red; text-align: center;">Failed to load news: ${error.message}</p>`;
+        document.getElementById("card_container").innerHTML = `<p style="color: #ff4d4f; text-align: center;">Failed to load news: ${error.message}</p>`;
     }
 }
 
@@ -38,7 +49,6 @@ function bindData(articles) {
     }
 
     articles.forEach((article) => {
-        if (!article.image_url || !article.title) return; // Skip articles without image or title
         const cardClone = document.importNode(cardTemplate.content, true);
         fillDataInCard(cardClone, article);
         cardsContainer.appendChild(cardClone);
@@ -54,10 +64,11 @@ function fillDataInCard(cardClone, article) {
     // Use article.image_url if available and valid, otherwise use fixed fallback image
     newsImg.src = (article.image_url && article.image_url.startsWith("http")) ? article.image_url : FALLBACK_IMAGE;
     newsImg.alt = article.title || "News Image";
+    newsImg.setAttribute("loading", "lazy"); // Enable lazy loading
     newsTitle.innerHTML = article.title ? `${article.title.slice(0, 60)}...` : "No title available";
     newsDesc.innerHTML = article.description ? `${article.description.slice(0, 150)}...` : "No description available";
 
-    const date = article.pubDate ? new Date(article.pubDate).toLocaleString("en-US", { timeZone: "Asia/Jakarta" }) : "Unknown date";
+    const date = article.pubDate ? new Date(article.pubDate).toLocaleString("en-US", { timeZone: "Asia/Kolkata" }) : "Unknown date";
     newsSource.innerHTML = `${article.source_id || "Unknown Source"} · ${date}`;
 
     cardClone.firstElementChild.addEventListener("click", () => {
