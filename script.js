@@ -1,5 +1,6 @@
 const API_KEY = "pub_85783cfc89c43a5e47d59648131ad965ee251";
 const url = "https://newsdata.io/api/1/news?apikey=";
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1495020689067-958852a7765e?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 window.addEventListener("load", () => fetchNews("Trending"));
 
@@ -50,7 +51,8 @@ function fillDataInCard(cardClone, article) {
     const newsSource = cardClone.querySelector("#news-source");
     const newsDesc = cardClone.querySelector("#news-desc");
 
-    newsImg.src = article.image_url || "https://via.placeholder.com/400x200?text=No+Image";
+    // Use article.image_url if available and valid, otherwise use fixed fallback image
+    newsImg.src = (article.image_url && article.image_url.startsWith("http")) ? article.image_url : FALLBACK_IMAGE;
     newsImg.alt = article.title || "News Image";
     newsTitle.innerHTML = article.title ? `${article.title.slice(0, 60)}...` : "No title available";
     newsDesc.innerHTML = article.description ? `${article.description.slice(0, 150)}...` : "No description available";
